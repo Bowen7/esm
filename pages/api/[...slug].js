@@ -22,9 +22,10 @@ export default function handler(req, res) {
   try {
     execSync(
       `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()}`,
-      tmpdir()
+      { cwd: tmpdir() }
     )
   } catch (error) {
+    console.log("error")
     console.log(error)
   }
 
