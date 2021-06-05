@@ -27,6 +27,8 @@ export default function handler(req, res) {
   } catch (error) {
     console.log("error")
     console.log(error)
+    console.log(error.stdout.toString())
+    console.log(error.stderr.toString())
   }
 
   console.log(3, Date.now())
