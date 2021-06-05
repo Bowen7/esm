@@ -13,13 +13,18 @@ export default function handler(req, res) {
   // TODO: Organization, Version ...
   const packageName = slug[0]
 
+  console.log(1, Date.now())
   const pnpmPath = path.resolve(process.cwd(), "pnpm")
   const destPnpmPath = path.resolve(tmpdir(), "pnpm")
   fse.copySync(pnpmPath, destPnpmPath)
+
+  console.log(2, Date.now())
   execSync(
     `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()} --silent`,
     __dirname
   )
+
+  console.log(3, Date.now())
 
   fs.writeFileSync(
     path.resolve(tmpdir(), "in.js"),
