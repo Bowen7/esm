@@ -22,31 +22,29 @@ export default function handler(req, res) {
 
   try {
     execSync(
-      `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()}`,
+      `HOME=${tmpdir} node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()}`,
       { cwd: tmpdir() }
     )
   } catch (error) {
-    // console.log("error")
+    console.log("error")
     // console.log(error)
-    // console.log(error.stdout.toString())
-    // console.log(error.stderr.toString())
-
-    console.log(process.env)
+    console.log(error.stdout.toString())
+    console.log(error.stderr.toString())
   }
 
   // console.log(3, Date.now())
 
-  // fs.writeFileSync(
-  //   path.resolve(tmpdir(), "in.js"),
-  //   `export { default } from "${packageName}"`
-  // )
-  // buildSync({
-  //   entryPoints: [path.resolve(tmpdir(), "in.js")],
-  //   outfile: path.resolve(tmpdir(), "out.js"),
-  //   bundle: true,
-  //   format: "esm",
-  //   minify: true,
-  // })
-  // const code = fs.readFileSync(path.resolve(tmpdir(), "out.js"), "utf8")
-  res.end("")
+  fs.writeFileSync(
+    path.resolve(tmpdir(), "in.js"),
+    `export { default } from "${packageName}"`
+  )
+  buildSync({
+    entryPoints: [path.resolve(tmpdir(), "in.js")],
+    outfile: path.resolve(tmpdir(), "out.js"),
+    bundle: true,
+    format: "esm",
+    minify: true,
+  })
+  const code = fs.readFileSync(path.resolve(tmpdir(), "out.js"), "utf8")
+  res.end(code)
 }
