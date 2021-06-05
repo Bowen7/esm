@@ -20,7 +20,6 @@ export default function handler(req, res) {
 
   console.log(2, Date.now())
 
-  console.log(process.env)
   try {
     execSync(
       `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()}`,
@@ -31,6 +30,8 @@ export default function handler(req, res) {
     console.log(error)
     console.log(error.stdout.toString())
     console.log(error.stderr.toString())
+
+    console.log(process.env)
   }
 
   console.log(3, Date.now())
