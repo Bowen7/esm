@@ -11,7 +11,7 @@ export default function handler(req, res) {
   // TODO: Organization, Version ...
   const packageName = slug[0]
 
-  const pnpmPath = path.resolve(process.cwd(), "pnpm/bin/pnpm.cjs")
+  const pnpmPath = path.resolve(process.cwd(), "pnpm/dist/pnpm.cjs")
   execSync(
     `node ${pnpmPath} install ${packageName} --dir ${__dirname}`,
     __dirname
