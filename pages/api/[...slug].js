@@ -1,4 +1,5 @@
 import { transformSync, buildSync } from "esbuild"
+import resolvePkg from "resolve-pkg"
 import { execSync } from "child_process"
 import fs from "fs"
 import path from "path"
@@ -11,7 +12,8 @@ export default function handler(req, res) {
   // TODO: Organization, Version ...
   const packageName = slug[0]
 
-  execSync(`pnpm install ${packageName} --dir ${__dirname}`)
+  const pnpmPath = resolvePkg("pnpm/bin/pnpm.cjs")
+  execSync(`node ${pnpmPath} install ${packageName} --dir ${__dirname}`)
   fs.writeFileSync(
     path.resolve(__dirname, "in.js"),
     `export { default } from "lodash"`
