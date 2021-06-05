@@ -19,6 +19,8 @@ export default function handler(req, res) {
   fse.copySync(pnpmPath, destPnpmPath)
 
   console.log(2, Date.now())
+
+  console.log(process.env)
   try {
     execSync(
       `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()}`,
