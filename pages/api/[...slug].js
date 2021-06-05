@@ -1,6 +1,8 @@
 import { transformSync, buildSync } from "esbuild"
 import fs from "fs"
 import path from "path"
+import fse from "fs-extra"
+import { tmpdir } from "os"
 import { execSync } from "child_process"
 export default function handler(req, res) {
   res.setHeader("Access-Control-Allow-Credentials", true)
@@ -11,23 +13,25 @@ export default function handler(req, res) {
   // TODO: Organization, Version ...
   const packageName = slug[0]
 
-  const pnpmPath = path.resolve(process.cwd(), "pnpm/dist/pnpm.cjs")
+  const pnpmPath = path.resolve(process.cwd(), "pnpm")
+  const destPnpmPath = path.resolve(tmpdir(), "pnpm")
+  fse.copySync(pnpmPath, destPnpmPath)
   execSync(
-    `node ${pnpmPath} install ${packageName} --dir ${__dirname}`,
+    `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()}`,
     __dirname
   )
 
   fs.writeFileSync(
-    path.resolve(__dirname, "in.js"),
-    `export { default } from "lodash"`
+    path.resolve(tmpdir(), "in.js"),
+    `export { default } from "${packageName}"`
   )
   buildSync({
-    entryPoints: [path.resolve(__dirname, "in.js")],
-    outfile: path.resolve(__dirname, "out.js"),
+    entryPoints: [path.resolve(tmpdir(), "in.js")],
+    outfile: path.resolve(tmpdir(), "out.js"),
     bundle: true,
     format: "esm",
     minify: true,
   })
-  const code = fs.readFileSync(path.resolve(__dirname, "out.js"), "utf8")
+  const code = fs.readFileSync(path.resolve(tmpdir(), "out.js"), "utf8")
   res.end(code)
 }
