@@ -21,7 +21,7 @@ export default function handler(req, res) {
   console.log(2, Date.now())
   try {
     execSync(
-      `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()} --silent`,
+      `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()}`,
       __dirname
     )
   } catch (error) {
