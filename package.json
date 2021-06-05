@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "npm run lib && next build",
     "start": "next start",
-    "lib": "cp node_modules/pnpm pnpm"
+    "lib": "cp -R node_modules/pnpm pnpm"
   },
   "dependencies": {
     "esbuild": "^0.12.6",
