@@ -19,10 +19,14 @@ export default function handler(req, res) {
   fse.copySync(pnpmPath, destPnpmPath)
 
   console.log(2, Date.now())
-  execSync(
-    `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()} --silent`,
-    __dirname
-  )
+  try {
+    execSync(
+      `node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()} --silent`,
+      __dirname
+    )
+  } catch (error) {
+    console.log(error)
+  }
 
   console.log(3, Date.now())
 
