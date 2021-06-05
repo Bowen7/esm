@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/[...slug].js": {
+    "pages/api/[...slug].js": {
       "includeFiles": "pnpm/**"
     }
   }
