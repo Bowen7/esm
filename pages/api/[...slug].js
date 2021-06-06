@@ -1,50 +1,24 @@
-import { transformSync, buildSync } from "esbuild"
-import fs from "fs"
-import path from "path"
-import fse from "fs-extra"
-import { tmpdir } from "os"
-import { execSync } from "child_process"
-export default function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Credentials", true)
-  res.setHeader("Access-Control-Allow-Origin", "*")
-  res.setHeader("Content-Type", "application/javascript; charset=utf-8")
+import { parse, install, setHeader, transform } from '../../utils'
+export default async function handler(req, res) {
+  const { name, version, subModule, type, bundle } = parse(req.query)
 
-  const { slug } = req.query
-  // TODO: Organization, Version ...
-  const packageName = slug[0]
+  setHeader(res, type)
 
-  console.log(1, Date.now())
-  const pnpmPath = path.resolve(process.cwd(), "pnpm")
-  const destPnpmPath = path.resolve(tmpdir(), "pnpm")
-  fse.copySync(pnpmPath, destPnpmPath)
+  install(name, version)
+  // const exampleOnResolvePlugin = {
+  //   name: 'example',
+  //   setup(build) {
+  //     build.onResolve({ filter: /^react/ }, (args) => {
+  //       console.log(123, args)
+  //       // return { path: args.path }
+  //       return {
+  //         path: path.join(args.resolveDir, 'public', args.path),
+  //         external: true,
+  //       }
+  //     })
+  //   },
+  // }
 
-  console.log(2, Date.now())
-
-  try {
-    execSync(
-      `HOME=${tmpdir} node ${destPnpmPath}/dist/pnpm.cjs install ${packageName} --dir ${tmpdir()}`,
-      { cwd: tmpdir() }
-    )
-  } catch (error) {
-    console.log("error")
-    // console.log(error)
-    console.log(error.stdout.toString())
-    console.log(error.stderr.toString())
-  }
-
-  // console.log(3, Date.now())
-
-  fs.writeFileSync(
-    path.resolve(tmpdir(), "in.js"),
-    `export { default } from "${packageName}"`
-  )
-  buildSync({
-    entryPoints: [path.resolve(tmpdir(), "in.js")],
-    outfile: path.resolve(tmpdir(), "out.js"),
-    bundle: true,
-    format: "esm",
-    minify: true,
-  })
-  const code = fs.readFileSync(path.resolve(tmpdir(), "out.js"), "utf8")
+  const code = await transform({ name, subModule, type, bundle })
   res.end(code)
 }
