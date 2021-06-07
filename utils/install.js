@@ -15,7 +15,8 @@ const install = (name = '', version = '') => {
     )
     console.log(out.toString())
   } catch (error) {
-    console.log(error)
+    console.log(error.stdout.toString())
+    console.log(error.stderr.toString())
   }
 }
 export default install

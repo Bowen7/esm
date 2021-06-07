@@ -1,42 +1,48 @@
 import { build } from 'esbuild'
+import fetch from 'node-fetch'
 import fs from 'fs'
 import { tmpdir } from 'os'
 import path from 'path'
+import createEsmPlugin from './plugin'
 
-const transform = async ({ name, subModule, type, bundle }) => {
-  let targetFile = ''
-  if (subModule) {
-    targetFile = path.resolve(
-      tmpdir(),
-      'node_modules/' + name + '/' + subModule
-    )
-  } else {
-    const packageJsonFile = path.join(
-      tmpdir(),
-      'node_modules/' + name + '/package.json'
-    )
-    const packageJson = JSON.parse(
-      fs.readFileSync(packageJsonFile, 'utf8').toString()
-    )
+const baseUrl = 'https://cdn.jsdelivr.net/npm/'
 
-    targetFile = path.join(
-      tmpdir(),
-      './node_modules/' + name + '/' + subModule,
-      packageJson.main
-    )
+const getMeta = async (name, version) => {
+  const packageUrl = baseUrl + name + (version ? '@' + version : '')
+  const packageJsonUrl = packageUrl + '/package.json'
+  const res = await fetch(packageJsonUrl)
+  const content = await res.json()
+  const { peerDependencies } = content
+  return {
+    main: new URL(content.module || content.main, packageJsonUrl).toString(),
+    peerDependencies,
   }
+}
 
+const getTargetUrl = async (name, version, subModule) => {
+  const packageUrl = baseUrl + name + (version ? '@' + version : '')
+  const packageJsonUrl = packageUrl + '/package.json'
+  return new URL(subModule, packageJsonUrl).toString()
+}
+
+const transform = async ({ name, subModule, version, type, bundle }) => {
+  let { main: entryUrl, peerDependencies = {} } = await getMeta(name, version)
+  if (subModule) {
+    entryUrl = await getTargetUrl(name, version, subModule)
+  }
   if (type !== '.js') {
-    const code = fs.readFileSync(targetFile, 'utf8')
-    return code
+    const res = await fetch(entryUrl)
+    return await res.text()
   }
   try {
     await build({
-      entryPoints: [targetFile],
+      entryPoints: [entryUrl],
       outfile: path.resolve(tmpdir(), 'out.js'),
-      bundle,
+      bundle: true,
       format: 'esm',
       minify: true,
+      plugins: [createEsmPlugin()],
+      external: Object.keys(peerDependencies),
     })
   } catch (error) {
     console.log(error)
