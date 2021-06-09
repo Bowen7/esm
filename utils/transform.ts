@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 import fs from 'fs'
 import { tmpdir } from 'os'
 import path from 'path'
-import createEsmPlugin from './plugin'
+import createEsmPlugin from './plugins/esbuild'
 
 const baseUrl = 'https://cdn.jsdelivr.net/npm/'
 
@@ -50,4 +50,5 @@ const transform = async ({ name, subModule, version, type, bundle }) => {
   const code = fs.readFileSync(path.resolve(tmpdir(), 'out.js'), 'utf8')
   return code
 }
+
 export default transform

@@ -9,6 +9,7 @@
     "lib": "cp -R node_modules/pnpm pnpm"
   },
   "dependencies": {
+    "@swc/core": "^1.2.60",
     "@types/node-fetch": "^2.5.10",
     "esbuild": "^0.12.6",
     "fs-extra": "^10.0.0",
