@@ -24,23 +24,21 @@ const createEsmPlugin = () => {
       })
 
       build.onLoad({ filter: /.*/, namespace: 'http-url' }, async (args) => {
-        async function fetch(url, times) {
+        async function fetch(url) {
           let _url = url
           const extname = path.extname(url)
           if (extname !== '.js') {
             _url += '.js'
           }
           const res = await nodeFetch(_url)
-          if ([301, 302, 307].includes(res.status)) {
-            return fetch(res.headers.location)
-          } else if (res.status === 200) {
+          if (res.status === 200) {
             return res.text()
           } else if (res.status === 404 && extname !== '.js') {
             return fetch(url + '/index.js')
           }
           return ''
         }
-        const contents = await fetch(args.path, 0)
+        const contents = await fetch(args.path)
         return { contents }
       })
     },

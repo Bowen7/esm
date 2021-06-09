@@ -7,7 +7,7 @@ import createEsmPlugin from './plugin'
 
 const baseUrl = 'https://cdn.jsdelivr.net/npm/'
 
-const getMeta = async (name, version) => {
+const getMeta = async (name: string, version: string) => {
   const packageUrl = baseUrl + name + (version ? '@' + version : '')
   const packageJsonUrl = packageUrl + '/package.json'
   const res = await fetch(packageJsonUrl)
