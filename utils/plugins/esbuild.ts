@@ -45,4 +45,28 @@ const createEsmPlugin = () => {
   }
 }
 
+export const createUnbundledPlugin = (host: string, importer: string) => ({
+  name: 'unbundled-plugin',
+  setup(build) {
+    const protocol =
+      process.env.NODE_ENV === 'development' ? 'http://' : 'https://'
+    const apiBase = protocol + host + '/api/'
+    build.onResolve({ filter: /.*/ }, (args) => {
+      const { kind } = args
+      if (kind === 'entry-point') {
+        return { path: args.path }
+      }
+      let newPath = ''
+      if (['.'].includes(args.path[0])) {
+        newPath = new URL(
+          args.path,
+          importer.replace(baseUrl, apiBase)
+        ).toString()
+      } else {
+        newPath = new URL(args.path, apiBase).toString()
+      }
+      return { path: newPath, external: true }
+    })
+  },
+})
 export default createEsmPlugin
