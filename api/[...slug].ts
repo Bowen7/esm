@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { parse, setHeader, transform } from '../../utils'
+import { parse, setHeader, transform } from '../utils'
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

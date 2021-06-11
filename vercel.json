@@ -1,12 +1,9 @@
 {
   "functions": {
-    "pages/api/[...slug].js": {
+    "api/test.js": {
       "includeFiles": "node_modules/@swc/**"
     },
-    "pages/api/test.js": {
-      "includeFiles": "node_modules/@swc/**"
-    },
-    "pages/api/test.ts": {
+    "api/test.ts": {
       "includeFiles": "node_modules/@swc/**"
     }
   }
