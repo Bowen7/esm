@@ -43,6 +43,16 @@ class SWCPlugin extends Visitor {
   visitAssignmentExpression(assignmentExpression: AssignmentExpression) {
     const { left, right } = assignmentExpression
     this.useDefault = left.type === 'Identifier'
+    if (
+      !this.useDefault &&
+      left.type === 'MemberExpression' &&
+      left.object.type === 'Identifier' &&
+      left.property.type === 'Identifier' &&
+      left.object.value === 'module' &&
+      left.property.value === 'exports'
+    ) {
+      this.useDefault = true
+    }
 
     assignmentExpression.left = this.visitPatternOrExpressison(left)
     assignmentExpression.right = this.visitExpression(right)
@@ -69,7 +79,6 @@ class SWCPlugin extends Visitor {
     }
 
     const source = args[0].expression.value + ''
-
     const useDefault = this.useDefault
 
     let id: string

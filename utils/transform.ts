@@ -16,7 +16,10 @@ const getMeta = async (name: string, version: string) => {
   const content = await res.json()
   const { peerDependencies } = content
   return {
-    main: new URL(content.module || content.main, packageJsonUrl).toString(),
+    main: new URL(
+      content.module || content.main || 'index.js',
+      packageJsonUrl
+    ).toString(),
     peerDependencies,
   }
 }
@@ -39,6 +42,7 @@ const transform = async ({ name, subModule, version, type, bundle, host }) => {
 
   const res = await fetch(entryUrl)
   let source = await res.text()
+
   const importMap: ImportMap = new Map()
   ;({ code: source } = await swcTransform(source, {
     jsc: {
@@ -60,6 +64,7 @@ const transform = async ({ name, subModule, version, type, bundle, host }) => {
       target: 'es2016',
     },
   }))
+
   let importCode = ''
   importMap.forEach((value, key) => {
     const { useDefault, id } = value
