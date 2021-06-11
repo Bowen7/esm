@@ -12,6 +12,7 @@
   "dependencies": {
     "@swc/core": "^1.2.60",
     "@types/node-fetch": "^2.5.10",
+    "@vercel/node": "^1.11.0",
     "esbuild": "^0.12.6",
     "fs-extra": "^10.0.0",
     "lodash": "^4.17.21",

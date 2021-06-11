@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/[...slug].ts": {
+    "pages/api/[...slug].ts": {
       "includeFiles": "node_modules/@swc/**"
     }
   }
