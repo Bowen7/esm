@@ -1,8 +1,5 @@
 {
   "functions": {
-    "api/test.js": {
-      "includeFiles": "node_modules/@swc/**"
-    },
     "api/test.ts": {
       "includeFiles": "node_modules/@swc/**"
     }
