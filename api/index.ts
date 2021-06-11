@@ -7,7 +7,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     req.query as { [key: string]: string },
     slugs
   )
-  console.log(req)
 
   setHeader(res, type)
 

@@ -1,6 +1,7 @@
 {
   "routes": [
-    {"src": "/vercel.svg", "dest": "/public/vercel.svg"},
+    { "src": "/vercel.svg", "dest": "/public/vercel.svg" },
+    { "src": "/favicon.ico", "dest": "/public/favicon.ico" },
     { "src": "/([^_]|^vercel.svg)+", "dest": "/api/index.ts" }
   ],
   "functions": {
