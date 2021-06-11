@@ -1,6 +1,10 @@
 {
+  "routes": [
+    {"src": "/vercel.svg", "dest": "/public/vercel.svg"},
+    { "src": "/([^_]|^vercel.svg)+", "dest": "/api/index.ts" }
+  ],
   "functions": {
-    "pages/api/[...slug].ts": {
+    "api/index.ts": {
       "includeFiles": "node_modules/@swc/**"
     }
   }

@@ -24,32 +24,31 @@ const parseQuery = (query: { [key: string]: string }): Query => {
   return { ...defaultQuery, ..._query }
 }
 
-const parseSlug = (slug: string[]) => {
+const parseSlugs = (slugs: string[]) => {
   const result = {
     name: '',
     version: '',
     subModule: '',
     type: '.js',
   }
-  if (slug.length > 1 && slug[0].indexOf('@') === 0) {
-    const [name, version = ''] = slug[1].split('@')
-    result.name = slug[0] + '/' + name
+  if (slugs.length > 1 && slugs[0].indexOf('@') === 0) {
+    const [name, version = ''] = slugs[1].split('@')
+    result.name = slugs[0] + '/' + name
     result.version = version
-    result.subModule = slug.slice(2).join('/')
+    result.subModule = slugs.slice(2).join('/')
   } else {
-    const [name, version = ''] = slug[0].split('@')
+    const [name, version = ''] = slugs[0].split('@')
     result.name = name
     result.version = version
-    result.subModule = slug.slice(1).join('/')
+    result.subModule = slugs.slice(1).join('/')
   }
   result.type = path.extname(result.subModule) || '.js'
   return result
 }
 
-const parse = (queryWithSlug: { [key: string]: string | string[] }) => {
-  const { slug, ...query } = queryWithSlug
+const parse = (query: { [key: string]: string }, slugs: string[]) => {
   return {
-    ...parseSlug(slug as string[]),
+    ...parseSlugs(slugs as string[]),
     ...parseQuery(query as { [key: string]: string }),
   }
 }

@@ -1,5 +1,5 @@
-import { NextApiResponse } from 'next'
-const setHeader = (res: NextApiResponse, type = '') => {
+import {  VercelResponse } from '@vercel/node'
+const setHeader = (res: VercelResponse, type = '') => {
   res.setHeader('Access-Control-Allow-Origin', '*')
 
   switch (type) {
