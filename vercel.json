@@ -1,7 +1,7 @@
 {
   "functions": {
     "pages/api/[...slug].js": {
-      "includeFiles": "pnpm/**"
+      "includeFiles": "node_modules/@swc/**"
     }
   }
 }
