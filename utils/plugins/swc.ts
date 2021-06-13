@@ -19,6 +19,9 @@ class SWCPlugin extends Visitor {
     super()
     this.importMap = importMap
   }
+  visitArrayElement(e) {
+    return e
+  }
   visitProgram(n: Program): Program {
     let program: Program
     switch (n.type) {
@@ -39,7 +42,6 @@ class SWCPlugin extends Visitor {
     )
     return variableDeclarator
   }
-
   visitAssignmentExpression(assignmentExpression: AssignmentExpression) {
     const { left, right } = assignmentExpression
     this.useDefault = left.type === 'Identifier'
@@ -53,12 +55,10 @@ class SWCPlugin extends Visitor {
     ) {
       this.useDefault = true
     }
-
     assignmentExpression.left = this.visitPatternOrExpressison(left)
     assignmentExpression.right = this.visitExpression(right)
     return assignmentExpression
   }
-
   visitCallExpression(callExpression: CallExpression): Expression | Identifier {
     const { span, callee, arguments: args } = callExpression
     if (
@@ -77,10 +77,8 @@ class SWCPlugin extends Visitor {
       }
       return callExpression
     }
-
     const source = args[0].expression.value + ''
     const useDefault = this.useDefault
-
     let id: string
     if (!this.importMap.has(source)) {
       id = nanoid()
@@ -91,7 +89,6 @@ class SWCPlugin extends Visitor {
         this.importMap.set(source, { useDefault, id })
       }
     }
-
     return {
       type: 'Identifier',
       span: span,

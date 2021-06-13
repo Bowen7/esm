@@ -1,25 +1,13 @@
 const { transformSync } = require('@swc/core')
 const Visitor = require('@swc/core/Visitor').default
+class SWCPlugin extends Visitor {}
 
-class SWCPlugin extends Visitor {
-  visitProgram(e) {
-    console.log(e.body[0].expression)
-    return e
-  }
-}
-
-const out = transformSync(
+const { code } = transformSync(
   `
-(function(){
-  var _assign = require('object-assign');
-})()
+  const arr = [1, 2, 3]
 `,
   {
     plugin: (m) => new SWCPlugin().visitProgram(m),
-    jsc: {
-      target: 'es2016',
-    },
   }
 )
-
-console.log(out)
+console.log(code)

@@ -6,6 +6,9 @@ import { tmpdir } from 'os'
 import path from 'path'
 import createEsmPlugin, { createUnbundledPlugin } from './plugins/esbuild'
 import SWCPlugin, { ImportMap } from './plugins/swc'
+import { customAlphabet } from 'nanoid/non-secure'
+
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 10)
 
 const baseUrl = 'https://cdn.jsdelivr.net/npm/'
 
@@ -39,6 +42,10 @@ const transform = async ({ name, subModule, version, type, bundle, host }) => {
     const res = await fetch(entryUrl)
     return await res.text()
   }
+  // TODO
+  if (path.extname(entryUrl) !== '.js') {
+    entryUrl += '.js'
+  }
 
   const res = await fetch(entryUrl)
   let source = await res.text()
@@ -48,13 +55,9 @@ const transform = async ({ name, subModule, version, type, bundle, host }) => {
     jsc: {
       target: 'es2016',
       transform: {
-        optimizer: {
-          globals: {
-            vars: {
-              'process.env.NODE_ENV': 'production',
-            },
-          },
-        },
+        // optimizer: {
+        //   globals: {},
+        // },
       },
     },
   }))
@@ -75,10 +78,11 @@ const transform = async ({ name, subModule, version, type, bundle, host }) => {
   })
   source = importCode + source
 
-  const entry = path.resolve(tmpdir(), 'entry.js')
+  const id = nanoid()
+  const entry = path.resolve(tmpdir(), id + '.js')
   fs.writeFileSync(entry, source)
 
-  const dist = path.resolve(tmpdir(), 'dist.js')
+  const dist = path.resolve(tmpdir(), id + '_dist.js')
 
   try {
     await build({
@@ -86,7 +90,7 @@ const transform = async ({ name, subModule, version, type, bundle, host }) => {
       outfile: dist,
       bundle: true,
       format: 'esm',
-      minify: true,
+      // minify: true,
       plugins: [createUnbundledPlugin(host, entryUrl)],
     })
   } catch (error) {
