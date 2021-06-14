@@ -1,19 +1,20 @@
 import { build } from 'esbuild'
 import { transform as swcTransform } from '@swc/core'
 import fetch from 'node-fetch'
+import { customAlphabet } from 'nanoid/non-secure'
 import fs from 'fs'
 import { tmpdir } from 'os'
 import path from 'path'
 import createEsmPlugin, { createUnbundledPlugin } from './plugins/esbuild'
 import SWCPlugin, { ImportMap } from './plugins/swc'
-import { customAlphabet } from 'nanoid/non-secure'
+import complete from './complete'
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 10)
 
-const baseUrl = 'https://cdn.jsdelivr.net/npm/'
+const baseUrl = 'https://cdn.jsdelivr.net/npm'
 
 const getMeta = async (name: string, version: string) => {
-  const packageUrl = baseUrl + name + (version ? '@' + version : '')
+  const packageUrl = baseUrl + '/' + name + (version ? '@' + version : '')
   const packageJsonUrl = packageUrl + '/package.json'
   const res = await fetch(packageJsonUrl)
   const content = await res.json()
@@ -27,26 +28,16 @@ const getMeta = async (name: string, version: string) => {
   }
 }
 
-const getTargetUrl = async (name, version, subModule) => {
-  const packageUrl = baseUrl + name + (version ? '@' + version : '')
-  const packageJsonUrl = packageUrl + '/package.json'
-  return new URL(subModule, packageJsonUrl).toString()
-}
-
-const transform = async ({ name, subModule, version, type, bundle, host }) => {
+const transform = async ({ url, name, subModule, version, type, host }) => {
   let { main: entryUrl, peerDependencies = {} } = await getMeta(name, version)
   if (subModule) {
-    entryUrl = await getTargetUrl(name, version, subModule)
+    entryUrl = baseUrl + url
   }
   if (type !== '.js') {
     const res = await fetch(entryUrl)
     return await res.text()
   }
-  // TODO
-  if (path.extname(entryUrl) !== '.js') {
-    entryUrl += '.js'
-  }
-
+  entryUrl = baseUrl + (await complete(entryUrl.replace(baseUrl, '')))
   const res = await fetch(entryUrl)
   let source = await res.text()
 
@@ -55,9 +46,9 @@ const transform = async ({ name, subModule, version, type, bundle, host }) => {
     jsc: {
       target: 'es2016',
       transform: {
-        // optimizer: {
-        //   globals: {},
-        // },
+        optimizer: {
+          globals: {},
+        },
       },
     },
   }))

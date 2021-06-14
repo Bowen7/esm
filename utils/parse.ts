@@ -6,6 +6,8 @@ const defaultQuery: Query = {
   bundle: false,
 }
 
+const urlRegex = /\/((?:@[a-z]+\/)?[a-z-]+)(?:@(.+))?(\/.+)?/
+
 const parseQuery = (query: { [key: string]: string }): Query => {
   const _query: Partial<Query> = {}
   for (let key in defaultQuery) {
@@ -24,31 +26,15 @@ const parseQuery = (query: { [key: string]: string }): Query => {
   return { ...defaultQuery, ..._query }
 }
 
-const parseSlugs = (slugs: string[]) => {
-  const result = {
-    name: '',
-    version: '',
-    subModule: '',
-    type: '.js',
-  }
-  if (slugs.length > 1 && slugs[0].indexOf('@') === 0) {
-    const [name, version = ''] = slugs[1].split('@')
-    result.name = slugs[0] + '/' + name
-    result.version = version
-    result.subModule = slugs.slice(2).join('/')
-  } else {
-    const [name, version = ''] = slugs[0].split('@')
-    result.name = name
-    result.version = version
-    result.subModule = slugs.slice(1).join('/')
-  }
-  result.type = path.extname(result.subModule) || '.js'
-  return result
+export const parseUrl = (url: string) => {
+  const [, name, version = '', subModule = ''] = url.match(urlRegex)
+  const type = path.extname(subModule) || '.js'
+  return { name, version, subModule, type }
 }
 
-const parse = (query: { [key: string]: string }, slugs: string[]) => {
+const parse = (url: string, query: { [key: string]: string }) => {
   return {
-    ...parseSlugs(slugs as string[]),
+    ...parseUrl(url),
     ...parseQuery(query as { [key: string]: string }),
   }
 }

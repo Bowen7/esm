@@ -51,6 +51,7 @@ export const createUnbundledPlugin = (host: string, importer: string) => ({
     const protocol =
       process.env.NODE_ENV === 'development' ? 'http://' : 'https://'
     const apiBase = protocol + host + '/'
+
     build.onResolve({ filter: /.*/ }, (args) => {
       const { kind } = args
       if (kind === 'entry-point') {
